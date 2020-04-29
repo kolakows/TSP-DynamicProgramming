@@ -1,2 +1,2 @@
 # TSP-DynamicProgramming
-Implementation of R. Bellman's view of dynamic programming in TSP
+Implementation of dynamic programming applied to TSP.
