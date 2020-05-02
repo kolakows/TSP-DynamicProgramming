@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Diagnostics;
+using System;
 
 namespace TSP
 {
@@ -113,6 +115,55 @@ namespace TSP
                     }
                 }
             }
+        }
+
+        public static void RunAlgorithm(string fileName, int repetitions, string outFileName, string outPathFileName)
+        {
+            Logger.GetLogger.LogNewFile(Logger.LogLevelType.Info, fileName);
+
+            Graph graph = new Graph(fileName);
+            Logger.GetLogger.LogGraph(Logger.LogLevelType.Debug, graph);
+
+            int bestCost = int.MaxValue;
+            int avgCost = 0;
+            long bestTime = long.MaxValue;
+            long avgTime = 0;
+
+            for (int i = 0; i < repetitions; i++)
+            {
+                Stopwatch sw = Stopwatch.StartNew();
+                PathDesc result = Algorithm.FindBestCycle(graph);
+                sw.Stop();
+
+                long timeMikros = sw.Elapsed.Ticks / (TimeSpan.TicksPerMillisecond / 1000);
+
+                long peakMemory = Process.GetCurrentProcess().PeakVirtualMemorySize64;
+                long curMemory = Process.GetCurrentProcess().VirtualMemorySize64;
+                Logger.GetLogger.Log(Logger.LogLevelType.Info, string.Format("Peak memory use: {0} current: {1}", peakMemory, curMemory));
+
+                Logger.GetLogger.LogResult(Logger.LogLevelType.Info, result.Cost, timeMikros);
+                Logger.GetLogger.LogPath(Logger.LogLevelType.Info, result);
+
+                avgCost += result.Cost;
+                avgTime += timeMikros;
+                if (result.Cost < bestCost)
+                {
+                    bestCost = result.Cost;
+                }
+                if (timeMikros < bestTime)
+                {
+                    bestTime = timeMikros;
+                }
+
+                if (i == repetitions - 1)
+                {
+                    Logger.GetLogger.SavePath(outPathFileName, result);
+                }
+            }
+            avgCost /= repetitions;
+            avgTime /= repetitions;
+            Logger.GetLogger.SaveResults(graph.Name, outFileName, bestCost, avgCost, bestTime, avgTime);
+            Logger.GetLogger.LogFinalResults(Logger.LogLevelType.Info, bestCost, avgCost, bestTime, avgTime);
         }
     }
 
