@@ -4,7 +4,7 @@ Implementation of Bellman dynamic algorithm for the Traveling Salesman Problem.
 
 # Input files
 
-The program accepts weighted undirected complete graphs `G = (V, E)`, `V = {v_0, v_1, ..., v_n-1}` represented in `*.txt` files in the format:
+The program accepts weighted undirected complete graphs `G = (V, E), V = {v_0, v_1, ..., v_n-1}` represented in `*.txt` files in the format:
 ```
 n
 w_01, w_02, ..., w_0n-1
@@ -26,7 +26,7 @@ Additionally, results from the whole program run (all instances tested) are aggr
 
 # Running
 
-After launching the program you can choose between the batch mode (b) and the interactive mode (i).
+After launching the program you can choose between the batch mode (`b`) and the interactive mode (`i`).
 
 ## Batch mode
 
@@ -34,6 +34,6 @@ The application runs tests on all instances from the `tests/` directory and writ
 
 ## Interactive mode
 
-You need to select an input graph file. Then you can choose result cycle file path, statistics  `*.csv` file path, logging level (Info, Debug, Insane) and the number of repetitions of the algorithm. No choice means accepting default values: `<graph_name>_out.txt` cycle file, `results.csv` statistics file, 'Info' logging and 10 repetitions.
+You need to select an input graph file. Then you can choose result cycle file path, statistics  `*.csv` file path, logging level (Info, Debug, Insane) and the number of repetitions of the algorithm. No choice (empty strings) means accepting default values: `<graph_name>_out.txt` cycle file, `results.csv` statistics file, 'Info' logging and 10 repetitions.
 
 Info logging does not influence the time of the algorithm itself. Debug logging outputs also intermediate results.
