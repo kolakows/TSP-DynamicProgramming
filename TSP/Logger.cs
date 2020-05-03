@@ -92,7 +92,7 @@ namespace TSP
                 {
                     sw.WriteLine("Graph,Best cost,Average cost,Best time,Average time");
                 }
-                sw.WriteLine("{0},{1},{2},{3}", bestCost, avgCost, bestTime, avgTime);
+                sw.WriteLine("{0},{1},{2},{3},{4}", graphName, bestCost, avgCost, bestTime, avgTime);
             }
         }
 

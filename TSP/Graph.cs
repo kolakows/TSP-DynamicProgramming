@@ -61,7 +61,7 @@ namespace TSP
             }
             VertexCount = n;
             Weights = new AdjTriangle(weights, VertexCount);
-            Name = fileName;
+            Name = Path.GetFileName(fileName);
         }
     }
 

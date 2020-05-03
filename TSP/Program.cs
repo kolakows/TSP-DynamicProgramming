@@ -15,28 +15,39 @@ namespace TSP
             Console.WriteLine("Select mode: b - batch, i - interactive");
             int mode = Console.Read();
             Console.ReadLine();
-
-            if (mode == 'b')
+            while (mode != 'b' && mode != 'i')
             {
-                RunBatchMode();
+                Console.WriteLine("Please choose 'b' or 'i'");
+                mode = Console.Read();
+                Console.ReadLine();
             }
-            else
+
+            try
             {
-                RunInteractiveMode();
+                if (mode == 'b')
+                {
+                    RunBatchMode();
+                }
+                else
+                {
+                    RunInteractiveMode();
+                }
+            }
+            finally
+            { // Keep console open also in case of an uncaught exception
+                Console.WriteLine("Press enter to close...");
+                Console.ReadLine();
             }
         }
 
         static void RunBatchMode()
         {
             int repetitions = 10;
-            List<string> files = new List<string>()
-            {
-                "testGraph.txt"
-            };
 
-            foreach (var file in files)
+            foreach (var filePath in Directory.GetFiles("tests/", "*.txt"))
             {
-                Algorithm.RunAlgorithm(file, repetitions, "results.csv", string.Format("{0}_out.txt", file));
+                string fileName = Path.GetFileName(filePath);
+                Algorithm.RunAlgorithm(filePath, repetitions, "results/results.csv", string.Format("results/{0}_out.txt", fileName));
             }
         }
 
@@ -49,18 +60,20 @@ namespace TSP
                 return;
             }
 
-            Console.WriteLine("Write results file name (default: <graph_name>_out.txt)");
-            string outPathFileName = Console.ReadLine();
-            if (outPathFileName == "")
+            string outPathFileName = string.Format("{0}_out.txt", fileName);
+            Console.WriteLine("Write results file name (default: {0}", outPathFileName);
+            string pathFileStr = Console.ReadLine();
+            if (pathFileStr != "")
             {
-                outPathFileName = string.Format("{0}_out.txt", fileName);
+                outPathFileName = pathFileStr;
             }
 
-            Console.WriteLine("Write results statistics file name (default: results.csv)");
-            string outFileName = Console.ReadLine();
-            if (outFileName == "")
+            string outFileName = "results.csv";
+            Console.WriteLine("Write results statistics file name (default: {0}", outFileName);
+            string outFileStr = Console.ReadLine();
+            if (outFileStr != "")
             {
-                outFileName = "results.csv";
+                outFileName = outFileStr;
             }
 
             // TODO: Any better way to select new file?
@@ -71,16 +84,23 @@ namespace TSP
             //    return;
             //}
 
-            Console.WriteLine("Select logging level: Info, Debug, Insane");
+            Console.WriteLine("Select logging level: Info, Debug, Insane (default: {0})", Logger.GetLogger.LogLevel);
             string level = Console.ReadLine();
-            Logger.GetLogger.LogLevel = (Logger.LogLevelType)Enum.Parse(typeof(Logger.LogLevelType), level);
-
-            Console.WriteLine("Write number of repetitions of the algorithm");
-            string rep = Console.ReadLine();
-            int repetitions;
-            while (!int.TryParse(rep, out repetitions))
+            if (level != "")
             {
-                Console.WriteLine("Please provide an integer number");
+                Logger.GetLogger.LogLevel = (Logger.LogLevelType)Enum.Parse(typeof(Logger.LogLevelType), level);
+            }
+
+            int repetitions = 10;
+            Console.WriteLine("Write number of repetitions of the algorithm (default: {0})", repetitions);
+            string rep = Console.ReadLine();
+            if (rep != "")
+            {
+                while (!int.TryParse(rep, out repetitions))
+                {
+                    Console.WriteLine("Please provide an integer number");
+                    rep = Console.ReadLine();
+                }
             }
 
             Algorithm.RunAlgorithm(fileName, repetitions, outFileName, outPathFileName);
