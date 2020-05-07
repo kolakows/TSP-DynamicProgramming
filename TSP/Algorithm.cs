@@ -9,8 +9,9 @@ namespace TSP
     {
         // Main loop of DP algorithm
         // Note: Start and end vertex is n - 1, not 0
-        public static PathDesc FindBestCycle(Graph graph)
+        public static PathDesc FindBestCycle(Graph graph, bool ReportMemoryUsage, out long maxBytesMemory)
         {
+			maxBytesMemory = 0;
             int n = graph.VertexCount;
             int cycleStart = graph.VertexCount - 1;
             Solution[] currentSolutions = new Solution[n - 1];
@@ -53,7 +54,13 @@ namespace TSP
                     nextSolutions[i] = sol;
                 }
                 currentSolutions = nextSolutions;
-            }
+				if (ReportMemoryUsage)
+				{
+					var memory = GC.GetTotalMemory(true);
+					if (memory > maxBytesMemory)
+						maxBytesMemory = memory;
+				}
+			}
 
             // Get the final solution - join cycleStart to best (n - 1)-sized
             // jm...cycleStart path.
@@ -117,7 +124,7 @@ namespace TSP
             }
         }
 
-        public static void RunAlgorithm(string fileName, int repetitions, string outFileName, string outPathFileName)
+        public static void RunAlgorithm(string fileName, int repetitions, bool reportMemoryUsage, string outFileName, string outPathFileName)
         {
             Logger.GetLogger.LogNewFile(Logger.LogLevelType.Info, fileName);
 
@@ -128,24 +135,25 @@ namespace TSP
             int avgCost = 0;
             long bestTime = long.MaxValue;
             long avgTime = 0;
+			long avgMemory = 0;
 
             for (int i = 0; i < repetitions; i++)
             {
                 Stopwatch sw = Stopwatch.StartNew();
-                PathDesc result = Algorithm.FindBestCycle(graph);
+                PathDesc result = Algorithm.FindBestCycle(graph, reportMemoryUsage, out long peakMemory);
                 sw.Stop();
 
                 long timeMikros = sw.Elapsed.Ticks / (TimeSpan.TicksPerMillisecond / 1000);
 
-                long peakMemory = Process.GetCurrentProcess().PeakVirtualMemorySize64;
-                long curMemory = Process.GetCurrentProcess().VirtualMemorySize64;
-                Logger.GetLogger.Log(Logger.LogLevelType.Info, string.Format("Peak memory use: {0} current: {1}", peakMemory, curMemory));
+				if(reportMemoryUsage)
+					Logger.GetLogger.Log(Logger.LogLevelType.Info, string.Format("Peak memory use: {0}", peakMemory));
 
                 Logger.GetLogger.LogResult(Logger.LogLevelType.Info, result.Cost, timeMikros);
                 Logger.GetLogger.LogPath(Logger.LogLevelType.Info, result);
 
                 avgCost += result.Cost;
                 avgTime += timeMikros;
+				avgMemory += peakMemory;
                 if (result.Cost < bestCost)
                 {
                     bestCost = result.Cost;
@@ -162,7 +170,8 @@ namespace TSP
             }
             avgCost /= repetitions;
             avgTime /= repetitions;
-            Logger.GetLogger.SaveResults(graph.Name, outFileName, bestCost, avgCost, bestTime, avgTime);
+			avgMemory /= repetitions;
+            Logger.GetLogger.SaveResults(graph.Name, outFileName, bestCost, avgCost, bestTime, avgTime, avgMemory);
             Logger.GetLogger.LogFinalResults(Logger.LogLevelType.Info, bestCost, avgCost, bestTime, avgTime);
         }
     }

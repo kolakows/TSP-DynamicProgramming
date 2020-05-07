@@ -26,11 +26,11 @@ namespace TSP
             {
                 if (mode == 'b')
                 {
-                    RunBatchMode();
+                    RunBatchMode(true);
                 }
                 else
                 {
-                    RunInteractiveMode();
+                    RunInteractiveMode(true);
                 }
             }
             finally
@@ -40,18 +40,18 @@ namespace TSP
             }
         }
 
-        static void RunBatchMode()
+        static void RunBatchMode(bool reportMemoryUsage)
         {
             int repetitions = 10;
 
             foreach (var filePath in Directory.GetFiles("tests/", "*.txt"))
             {
                 string fileName = Path.GetFileName(filePath);
-                Algorithm.RunAlgorithm(filePath, repetitions, "results/results.csv", string.Format("results/{0}_out.txt", fileName));
+                Algorithm.RunAlgorithm(filePath, repetitions, reportMemoryUsage, "results/results.csv", string.Format("results/{0}_out.txt", fileName));
             }
         }
 
-        static void RunInteractiveMode()
+        static void RunInteractiveMode(bool reportMemoryUsage)
         {
             Console.WriteLine("Choose a graph instance for testing");
             string fileName = ChooseFile("Choose a graph instance for tests", "Graph files (*.txt)|*.txt");
@@ -103,7 +103,7 @@ namespace TSP
                 }
             }
 
-            Algorithm.RunAlgorithm(fileName, repetitions, outFileName, outPathFileName);
+            Algorithm.RunAlgorithm(fileName, repetitions, reportMemoryUsage, outFileName, outPathFileName);
         }
 
         static string ChooseFile(string message, string filter)
