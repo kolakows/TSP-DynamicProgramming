@@ -171,7 +171,7 @@ namespace TSP
             avgCost /= repetitions;
             avgTime /= repetitions;
 			avgMemory /= repetitions;
-            Logger.GetLogger.SaveResults(graph.Name, outFileName, bestCost, avgCost, bestTime, avgTime, avgMemory);
+            Logger.GetLogger.SaveResults(graph.Name, outFileName, bestCost, avgCost, bestTime, avgTime, avgMemory,graph.VertexCount);
             Logger.GetLogger.LogFinalResults(Logger.LogLevelType.Info, bestCost, avgCost, bestTime, avgTime);
         }
     }

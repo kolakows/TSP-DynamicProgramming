@@ -82,7 +82,7 @@ namespace TSP
             }
         }
 
-        public void SaveResults(string graphName, string outFileName, int bestCost, int avgCost, long bestTime, long avgTime, long avgMemory)
+        public void SaveResults(string graphName, string outFileName, int bestCost, int avgCost, long bestTime, long avgTime, long avgMemory, int vertexCount)
         {
             bool headersSet = File.Exists(outFileName);
 
@@ -90,9 +90,9 @@ namespace TSP
             {
                 if (!headersSet)
                 {
-                    sw.WriteLine("Graph,Best cost,Average cost,Best time,Average time,Average memory");
+                    sw.WriteLine("Graph,Best cost,Average cost,Best time,Average time,Average memory,VertexCount");
                 }
-                sw.WriteLine("{0},{1},{2},{3},{4},{5}", graphName, bestCost, avgCost, bestTime, avgTime, avgMemory);
+                sw.WriteLine("{0},{1},{2},{3},{4},{5},{6}", graphName, bestCost, avgCost, bestTime, avgTime, avgMemory, vertexCount);
             }
         }
 
