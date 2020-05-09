@@ -44,11 +44,5 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\TSP\TSP.csproj">
-      <Project>{257dbbd6-b886-4d40-ab61-54cd6683a5cb}</Project>
-      <Name>TSP</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

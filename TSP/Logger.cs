@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 
 namespace TSP
@@ -7,97 +6,83 @@ namespace TSP
 
     public class Logger
     {
-        public enum LogLevelType { Info, Debug, Insane }
-        public LogLevelType LogLevel = LogLevelType.Info;
-        private List<string> LogLevelTypeNames = new List<string>() { " INFO ", " DEBUG", "INSANE" };
-
-        public void Log(LogLevelType level, string message)
+        public void Log(string message)
         {
-            if (level <= LogLevel)
-            {
-                Console.WriteLine(message);
-            }
+            Console.WriteLine(message);
         }
 
-        public void LogNewFile(LogLevelType level, string fileName)
+        public void LogNewFile(string fileName)
         {
-            if (level <= LogLevel)
-            {
-                Console.WriteLine();
-                Console.WriteLine(new string('>', 80));
-                Console.Write("[{0}:] ", LogLevelTypeNames[(int)level]);
-                Console.WriteLine("Starting algorithm for {0} ...", fileName);
-            }
+            Console.WriteLine();
+            Console.WriteLine(new string('>', 80));
+            Console.WriteLine("Starting algorithm for {0} ...", fileName);
         }
 
-        public void LogResult(LogLevelType level, int cost, long timeMikros)
+        public void LogResult(int cost, long timeMikros)
         {
-            if (level <= LogLevel)
-            {
-                Console.Write("[{0}:] ", LogLevelTypeNames[(int)level]);
-                Console.WriteLine("Single pass result: {0}, time: {1} mikro s", cost, timeMikros);
-            }
+            Console.WriteLine("Single pass result: {0}, time: {1} mikro s", cost, timeMikros);
         }
 
-        public void LogFinalResults(LogLevelType level, int bestCost, int avgCost, long bestTime, long avgTime)
+        public void LogFinalResults(int bestCost, long bestTime, long avgTime)
         {
-            if (level <= LogLevel)
-            {
-                Console.WriteLine("[{0}:] Results:", LogLevelTypeNames[(int)level]);
-                Console.WriteLine("Best solution: {0}, average: {1}", bestCost, avgCost);
-                Console.WriteLine("Best time: {0} mikro s, average: {1} mikro s", bestTime, avgTime);
-                Console.WriteLine(new string('<', 80));
-            }
+            Console.WriteLine("Results:");
+            Console.WriteLine("Best solution: {0}", bestCost);
+            Console.WriteLine("Best time: {0} mikro s, average: {1} mikro s", bestTime, avgTime);
+            Console.WriteLine(new string('<', 80));
         }
 
-        public void LogGraph(LogLevelType level, Graph graph)
+        public void LogGraph(Graph graph)
         {
-            if (level <= LogLevel)
+            Console.WriteLine("Graph: {0}", graph.Name);
+            Console.WriteLine("Size: {0}", graph.VertexCount);
+            for (int i = 0; i < graph.VertexCount; i++)
             {
-                Console.WriteLine("[{0}:] Graph: {1}", LogLevelTypeNames[(int)level], graph.Name);
-                Console.WriteLine("Size: {0}", graph.VertexCount);
-                for (int i = 0; i < graph.VertexCount; i++)
+                for (int j = 0; j < i; j++)
                 {
-                    for (int j = 0; j < i; j++)
-                    {
-                        Console.Write("   ");
-                    }
-                    Console.Write(" x ");
-                    for (int j = i + 1; j < graph.VertexCount; j++)
-                    {
-                        Console.Write(graph[i, j]);
-                    }
-                    Console.WriteLine();
+                    Console.Write("    ");
                 }
+                Console.Write(" ###");
+                for (int j = i + 1; j < graph.VertexCount; j++)
+                {
+                    Console.Write(" {0,3}", graph[i, j]);
+                }
+                Console.WriteLine();
             }
         }
 
-        public void LogPath(LogLevelType level, PathDesc pathDesc)
+        public void LogPath(PathDesc pathDesc)
         {
-            if (level <= LogLevel)
+            Console.WriteLine("Path:");
+            Console.WriteLine("Cost: {0}", pathDesc.Cost);
+            Console.WriteLine(string.Join(", ", pathDesc.Path));
+        }
+
+        public void SaveResults(string graphName, string outFileName, int bestCost, long bestTime, long avgTime, long avgMemory, int vertexCount)
+        {
+            string outFileDir = Path.GetDirectoryName(outFileName);
+            if (!Directory.Exists(outFileDir))
             {
-                Console.WriteLine("[{0}:] Path:", LogLevelTypeNames[(int)level]);
-                Console.WriteLine("Cost: {0}", pathDesc.Cost);
-                Console.WriteLine(string.Join(", ", pathDesc.Path));
+                Directory.CreateDirectory(outFileDir);
             }
-        }
-
-        public void SaveResults(string graphName, string outFileName, int bestCost, int avgCost, long bestTime, long avgTime, long avgMemory, int vertexCount)
-        {
             bool headersSet = File.Exists(outFileName);
 
             using (StreamWriter sw = File.AppendText(outFileName))
             {
                 if (!headersSet)
                 {
-                    sw.WriteLine("Graph,Best cost,Average cost,Best time,Average time,Average memory,VertexCount");
+                    sw.WriteLine("Graph,Best cost,Best time,Average time,Average memory,Graph size");
                 }
-                sw.WriteLine("{0},{1},{2},{3},{4},{5},{6}", graphName, bestCost, avgCost, bestTime, avgTime, avgMemory, vertexCount);
+                sw.WriteLine("{0},{1},{2},{3},{4},{5}", graphName, bestCost, bestTime, avgTime, avgMemory, vertexCount);
             }
         }
 
         public void SavePath(string outPathFileName, PathDesc pathDesc)
         {
+            string outFileDir = Path.GetDirectoryName(outPathFileName);
+            if (!Directory.Exists(outFileDir))
+            {
+                Directory.CreateDirectory(outFileDir);
+            }
             string[] items = { pathDesc.Cost.ToString(), string.Join(", ", pathDesc.Path) };
             File.WriteAllLines(outPathFileName, items);
         }

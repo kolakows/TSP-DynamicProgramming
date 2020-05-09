@@ -2,7 +2,9 @@
 
 Implementation of Bellman dynamic algorithm for the Traveling Salesman Problem.
 
-# Input files
+## TSP program
+
+### Input files
 
 The program accepts weighted undirected complete graphs `G = (V, E), V = {v_0, v_1, ..., v_n-1}` represented in `*.txt` files in the format:
 ```
@@ -14,7 +16,7 @@ w_n-2n-1
 ```
 where `w_ij` is the weight of edge `(v_i, v_j)`. In interactive mode only one file is processed at time.
 
-# Output files
+### Output files
 For each input graph the cycle found is saved in a `*.txt` file in the form:
 ```
 c
@@ -24,16 +26,18 @@ where `c` is cycle cost (sum of edges weights), `vp_0, ..., vp_n-1` are graph ve
 
 Additionally, results from the whole program run (all instances tested) are aggregated into a `*.csv` file that contains: instance file name, cost of the cycle found, best time and average time of calculating TSP for this instance.
 
-# Running
+### Running
 
 After launching the program you can choose between the batch mode (`b`) and the interactive mode (`i`).
 
-## Batch mode
+#### Batch mode
 
 The application runs tests on all instances from the `tests/` directory and writes results under `results/`. Each instance is calculated 10 times. The results for each repetition as well as summary of instance results are logged in the console.
 
-## Interactive mode
+#### Interactive mode
 
-You need to select an input graph file. Then you can choose result cycle file path, statistics  `*.csv` file path, logging level (Info, Debug, Insane) and the number of repetitions of the algorithm. No choice (empty strings) means accepting default values: `<graph_name>_out.txt` cycle file, `results.csv` statistics file, 'Info' logging and 10 repetitions.
+You need to select an input graph file. Then you can choose result cycle file path, statistics  `*.csv` file path, the number of repetitions of the algorithm and whether the program should report memory usage. No choice (empty strings) means accepting default values: `<graph_name>_out.txt` cycle file, `results.csv` statistics file, 10 repetitions and no memory recording.
 
-Info logging does not influence the time of the algorithm itself. Debug logging outputs also intermediate results.
+## Graph Generator helper program
+
+The program generates random graph instances and saves them to `*.txt ` files according to the input file format for the `TSP` program. The generator parameters: graph sizes range, graph weights range, generator seed and output files location can be set in the code only. The program is not interactive, after launching and generating graphs it prints a message on the console and finishes.

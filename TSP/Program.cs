@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
 using System.IO;
-using System.Collections.Generic;
 
 namespace TSP
 {
@@ -26,11 +25,11 @@ namespace TSP
             {
                 if (mode == 'b')
                 {
-                    RunBatchMode(true);
+                    RunBatchMode();
                 }
                 else
                 {
-                    RunInteractiveMode(true);
+                    RunInteractiveMode();
                 }
             }
             finally
@@ -40,9 +39,10 @@ namespace TSP
             }
         }
 
-        static void RunBatchMode(bool reportMemoryUsage)
+        static void RunBatchMode()
         {
             int repetitions = 10;
+            bool reportMemoryUsage = true;
 
             foreach (var filePath in Directory.GetFiles("tests/", "*.txt"))
             {
@@ -51,44 +51,30 @@ namespace TSP
             }
         }
 
-        static void RunInteractiveMode(bool reportMemoryUsage)
+        static void RunInteractiveMode()
         {
             Console.WriteLine("Choose a graph instance for testing");
-            string fileName = ChooseFile("Choose a graph instance for tests", "Graph files (*.txt)|*.txt");
-            if (fileName == "")
+            string filePath = ChooseFile("Choose a graph instance for tests", "Graph files (*.txt)|*.txt");
+            if (filePath == "")
             {
                 return;
             }
 
-            string outPathFileName = string.Format("{0}_out.txt", fileName);
-            Console.WriteLine("Write results file name (default: {0}", outPathFileName);
+            string fileName = Path.GetFileName(filePath);
+            string outPathFileName = string.Format("results/{0}_out.txt", fileName);
+            Console.WriteLine("Write results file name (default: {0})", outPathFileName);
             string pathFileStr = Console.ReadLine();
             if (pathFileStr != "")
             {
                 outPathFileName = pathFileStr;
             }
 
-            string outFileName = "results.csv";
-            Console.WriteLine("Write results statistics file name (default: {0}", outFileName);
+            string outFileName = "results/results.csv";
+            Console.WriteLine("Write results statistics file name (default: {0})", outFileName);
             string outFileStr = Console.ReadLine();
             if (outFileStr != "")
             {
                 outFileName = outFileStr;
-            }
-
-            // TODO: Any better way to select new file?
-            //Console.WriteLine("Select the results file");
-            //string outFileName = ChooseFile("Select the results file", "All files|*");
-            //if (outFileName == "")
-            //{
-            //    return;
-            //}
-
-            Console.WriteLine("Select logging level: Info, Debug, Insane (default: {0})", Logger.GetLogger.LogLevel);
-            string level = Console.ReadLine();
-            if (level != "")
-            {
-                Logger.GetLogger.LogLevel = (Logger.LogLevelType)Enum.Parse(typeof(Logger.LogLevelType), level);
             }
 
             int repetitions = 10;
@@ -103,7 +89,20 @@ namespace TSP
                 }
             }
 
-            Algorithm.RunAlgorithm(fileName, repetitions, reportMemoryUsage, outFileName, outPathFileName);
+            bool reportMemoryUsage = false;
+            Console.WriteLine("Do you want memory usage to be reported? (y/N)");
+            string usageStr = Console.ReadLine();
+            if (usageStr != "")
+            {
+                while (usageStr != "y" && usageStr != "n")
+                {
+                    Console.WriteLine("Write 'y' or 'n'");
+                    usageStr = Console.ReadLine();
+                }
+                reportMemoryUsage = usageStr == "y";
+            }
+
+            Algorithm.RunAlgorithm(filePath, repetitions, reportMemoryUsage, outFileName, outPathFileName);
         }
 
         static string ChooseFile(string message, string filter)
