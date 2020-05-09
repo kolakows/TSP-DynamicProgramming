@@ -10,7 +10,7 @@ namespace GraphGenerator
     {
         static void Main(string[] args)
         {
-            GenerateGraphs(10, 18, 1, 100, 123456789, "test", "../../../TSP/tests");
+            GenerateGraphs(10, 18, 1, 100, 123456789, "test", "./tests");
             Console.WriteLine("Graphs generated");
         }
 
